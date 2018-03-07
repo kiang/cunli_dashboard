@@ -76,8 +76,8 @@ var appView = new ol.View({
 
 var cityLayer = new ol.layer.Vector({
     source: new ol.source.Vector({
-        url: 'city.json',
-        format: new ol.format.GeoJSON()
+        url: 'city.topo.json',
+        format: new ol.format.TopoJSON()
     }),
     style: function(f) {
       var fStyle = layerYellow.clone();
