@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <title>台灣地質敏感區</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <meta property="og:title" content="台灣地質敏感區">
+    <meta property="og:description" content="台灣地質敏感區">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="http://kiang.github.io/gsa/og_image.png">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.4/ol.css" type="text/css">
+    <link rel="stylesheet" href="css/ol3-sidebar.css" />
+    <style>
+    body {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+    html, body, #map {
+      height: 100%;
+      font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
+    }
+    .lorem {
+      font-style: italic;
+      color: #AAA;
+    }
+    .ol-popup {
+      position: absolute;
+      background-color: white;
+      -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+      filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #cccccc;
+      bottom: 12px;
+      left: -50px;
+      min-width: 280px;
+    }
+    .ol-popup:after, .ol-popup:before {
+      top: 100%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+    }
+    .ol-popup:after {
+      border-top-color: white;
+      border-width: 10px;
+      left: 48px;
+      margin-left: -10px;
+    }
+    .ol-popup:before {
+      border-top-color: #cccccc;
+      border-width: 11px;
+      left: 48px;
+      margin-left: -11px;
+    }
+    .ol-popup-closer {
+      text-decoration: none;
+      position: absolute;
+      top: 2px;
+      right: 8px;
+    }
+    .ol-popup-closer:after {
+      content: "✖";
+    }
+    </style>
+  </head>
+  <body>
+    <div id="fb-root"></div>
+<script>
+// (function(d, s, id) {
+//   var js, fjs = d.getElementsByTagName(s)[0];
+//   if (d.getElementById(id)) return;
+//   js = d.createElement(s); js.id = id;
+//   js.src = 'https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.12&appId=1393405437614114&autoLogAppEvents=1';
+//   fjs.parentNode.insertBefore(js, fjs);
+// }(document, 'script', 'facebook-jssdk'));
+</script>
+    <div id="sidebar" class="sidebar collapsed">
+        <!-- Nav tabs -->
+        <div class="sidebar-tabs">
+            <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                <li><a href="#fb" role="tab"><i class="fa fa-facebook"></i></a></li>
+                <li><a href="https://github.com/kiang/gsa/" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="sidebar-content">
+            <div class="sidebar-pane" id="home">
+                <h1 class="sidebar-header">
+                    台灣地質敏感區
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+                <p>
+                  <a href="#" class="btn btn-danger btn-lg btn-block btnTopo" data-id="F">活動斷層地質敏感區(F)</a>
+                  <a href="#" class="btn btn-warning btn-lg btn-block btnTopo" data-id="H">地質遺跡地質敏感區(H)</a>
+                  <a href="#" class="btn btn-info btn-lg btn-block btnTopo" data-id="G">地下水補注地質敏感區(G)</a>
+                  <div class="dropdown">
+                    <button type="button" class="btn btn-dark btn-lg btn-block dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">山崩與地滑地質敏感區(L)</button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0001">臺北市</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0002">南投縣</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0003">臺中市</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0004">嘉義縣市</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0005">臺南市</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0006">高雄市</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0007">新北市</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0008">基隆市</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0009">屏東縣</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0010">臺東縣</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0011">桃園市</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0012">新竹縣市</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0013">苗栗縣</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0014">彰化縣</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0015">雲林縣</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0016">宜蘭縣</a>
+                      <a class="dropdown-item btnTopo" href="#" data-id="L0017">花蓮縣</a>
+                    </div>
+                  </div>
+                  <hr />
+                  <div class="list-group" id="layerList"></div>
+                </p>
+                <p>參考資料：<ul>
+                  <li><a href="https://www.moeacgs.gov.tw/newlaw/newlaw_SHP.htm" target="_blank">地質敏感區範圍數值檔</a></li>
+                </ul></p>
+            </div>
+            <div class="sidebar-pane" id="fb">
+              <div class="fb-page" data-href="https://www.facebook.com/k.olc.tw/" data-tabs="timeline" data-width="380" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/k.olc.tw/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/k.olc.tw/">江明宗</a></blockquote></div>
+            </div>
+        </div>
+    </div>
+    <div id="map" class="map"></div>
+    <div id="popup" class="ol-popup">
+      <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+      <div id="popup-content"></div>
+    </div>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.4/ol.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="js/ol3-sidebar.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
