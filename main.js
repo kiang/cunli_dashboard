@@ -134,34 +134,71 @@ geolocation.on('change:position', function() {
 
 var lastCity = false;
 var cunliLayer = false;
+var currentTownId = '';
+var smallMap = false;
+var smallMapView = new ol.View({
+  center: ol.proj.fromLonLat([120.301507, 23.124694]),
+  zoom: 10
+});
+var smallMapLayer = false;
 map.on('singleclick', function(evt) {
   clickedCoordinate = evt.coordinate;
   map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
       var p = feature.getProperties();
-      if(p.TOWN_ID) {
+      if(currentTownId !== p.TOWN_ID) {
         if(false !== lastCity) {
           var fStyle = layerYellow.clone();
-          fStyle.getText().setText(lastCity.get('TOWNNAME'));
+          fStyle.getText().setText(lastCity.get('T_Name'));
           lastCity.setStyle(fStyle);
         }
         if(false !== cunliLayer) {
           map.removeLayer(cunliLayer);
         }
-        cunliLayer = new ol.layer.Vector({
-            source: new ol.source.Vector({
-                url: 'cunli/' + p.TOWN_ID + '.json',
-                format: new ol.format.GeoJSON()
-            }),
-            style: function(f) {
-              var fStyle = layerBlue.clone();
-              fStyle.getText().setText(f.get('V_Name'));
-              return fStyle;
-            }
-        });
+        if(!layerPool[p.TOWN_ID]) {
+          layerPool[p.TOWN_ID] = new ol.layer.Vector({
+              source: new ol.source.Vector({
+                  url: 'cunli/' + p.TOWN_ID + '.json',
+                  format: new ol.format.GeoJSON()
+              }),
+              style: function(f) {
+                var fStyle = layerBlue.clone();
+                fStyle.getText().setText(f.get('V_Name'));
+                return fStyle;
+              }
+          });
+        }
+        cunliLayer = layerPool[p.TOWN_ID];
         map.addLayer(cunliLayer);
-        map.getView().fit(feature.getGeometry().getExtent());
+        map.getView().fit(feature.getGeometry());
         feature.setStyle(layerBlank);
         lastCity = feature;
+        sidebar.close();
+        currentTownId = p.TOWN_ID;
+      } else if(p.VILLAGE_ID) {
+        var cunliTitle = p.C_Name + p.T_Name + p.V_Name;
+        $('#boardTitle').html(cunliTitle);
+        $('#sidebar-title').html(cunliTitle);
+        if(!smallMap) {
+          smallMap = new ol.Map({
+            controls: [],
+            interactions: [],
+            target: 'smallMap',
+            view: smallMapView
+          });
+        }
+        if(false !== smallMapLayer) {
+          smallMap.removeLayer(smallMapLayer);
+        }
+        smallMapLayer = new ol.layer.Vector({
+          source: new ol.source.Vector(),
+          style: layerBlue
+        });
+        smallMapLayer.getSource().addFeature(feature);
+        sidebar.open('home');
+        map.getView().fit(feature.getGeometry());
+        smallMap.addLayer(smallMapLayer);
+        smallMap.getView().fit(feature.getGeometry());
+        smallMap.updateSize();
       }
   });
 });

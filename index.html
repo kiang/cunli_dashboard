@@ -2,13 +2,13 @@
 <html>
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <title>台灣地質敏感區</title>
+    <title>村里儀表板</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
-    <meta property="og:title" content="台灣地質敏感區">
-    <meta property="og:description" content="台灣地質敏感區">
+    <meta property="og:title" content="村里儀表板">
+    <meta property="og:description" content="村里儀表板">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="http://kiang.github.io/gsa/og_image.png">
+    <meta property="og:image" content="http://kiang.github.io/cunli_dashboard/og_image.png">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.4/ol.css" type="text/css">
@@ -88,7 +88,7 @@
             <ul role="tablist">
                 <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
                 <li><a href="#fb" role="tab"><i class="fa fa-facebook"></i></a></li>
-                <li><a href="https://github.com/kiang/gsa/" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>
+                <li><a href="https://github.com/kiang/cunli_dashboard/" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>
             </ul>
         </div>
 
@@ -96,41 +96,13 @@
         <div class="sidebar-content">
             <div class="sidebar-pane" id="home">
                 <h1 class="sidebar-header">
-                    台灣地質敏感區
+                    村里儀表板::<span id="sidebar-title"></span>
                     <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
                 </h1>
-                <p>
-                  <a href="#" class="btn btn-danger btn-lg btn-block btnTopo" data-id="F">活動斷層地質敏感區(F)</a>
-                  <a href="#" class="btn btn-warning btn-lg btn-block btnTopo" data-id="H">地質遺跡地質敏感區(H)</a>
-                  <a href="#" class="btn btn-info btn-lg btn-block btnTopo" data-id="G">地下水補注地質敏感區(G)</a>
-                  <div class="dropdown">
-                    <button type="button" class="btn btn-dark btn-lg btn-block dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">山崩與地滑地質敏感區(L)</button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0001">臺北市</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0002">南投縣</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0003">臺中市</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0004">嘉義縣市</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0005">臺南市</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0006">高雄市</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0007">新北市</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0008">基隆市</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0009">屏東縣</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0010">臺東縣</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0011">桃園市</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0012">新竹縣市</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0013">苗栗縣</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0014">彰化縣</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0015">雲林縣</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0016">宜蘭縣</a>
-                      <a class="dropdown-item btnTopo" href="#" data-id="L0017">花蓮縣</a>
-                    </div>
-                  </div>
-                  <hr />
-                  <div class="list-group" id="layerList"></div>
-                </p>
-                <p>參考資料：<ul>
-                  <li><a href="https://www.moeacgs.gov.tw/newlaw/newlaw_SHP.htm" target="_blank">地質敏感區範圍數值檔</a></li>
-                </ul></p>
+                <div id="sidebar-board">
+                  <div id="smallMap" style="width: 100%; height: 300px;"></div>
+                  <h1 id="boardTitle">請在地圖選擇一個村里</h1>
+                </div>
             </div>
             <div class="sidebar-pane" id="fb">
               <div class="fb-page" data-href="https://www.facebook.com/k.olc.tw/" data-tabs="timeline" data-width="380" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/k.olc.tw/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/k.olc.tw/">江明宗</a></blockquote></div>
