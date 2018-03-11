@@ -175,6 +175,9 @@ map.on('singleclick', function(evt) {
         sidebar.close();
         currentTownId = p.TOWN_ID;
       } else if(p.VILLAGE_ID) {
+        $.getJSON('data/' + p.VILLAGE_ID + '.json', function(d) {
+          console.log(d);
+        })
         var cunliTitle = p.C_Name + p.T_Name + p.V_Name;
         $('#boardTitle').html(cunliTitle);
         $('#sidebar-title').html(cunliTitle);
