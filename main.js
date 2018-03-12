@@ -276,7 +276,9 @@ var showCunliCharts = function(d) {
   chartConfig.data.datasets.push(dataset1);
   chartConfig.data.datasets.push(dataset2);
   chartConfig.data.datasets.push(dataset3);
-  var ctx = document.getElementById('chartPopulation').getContext('2d');
+  $('#results-graph').remove();
+  $('#chartPopulation').html('<canvas id="results-graph" height="600px"><canvas>');
+  var ctx = document.getElementById('results-graph').getContext('2d');
   window.myLine = new Chart(ctx, chartConfig);
 }
 
