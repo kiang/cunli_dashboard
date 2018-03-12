@@ -141,6 +141,7 @@ var smallMapView = new ol.View({
   zoom: 10
 });
 var smallMapLayer = false;
+var dataPool = {};
 map.on('singleclick', function(evt) {
   clickedCoordinate = evt.coordinate;
   map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
@@ -175,9 +176,14 @@ map.on('singleclick', function(evt) {
         sidebar.close();
         currentTownId = p.TOWN_ID;
       } else if(p.VILLAGE_ID) {
-        $.getJSON('data/' + p.VILLAGE_ID + '.json', function(d) {
-          console.log(d);
-        })
+        if(!dataPool[p.VILLAGE_ID]) {
+          $.getJSON('data/' + p.VILLAGE_ID + '.json', function(d) {
+            dataPool[p.VILLAGE_ID] = d;
+            showCunliCharts(dataPool[p.VILLAGE_ID]);
+          })
+        } else {
+          showCunliCharts(dataPool[p.VILLAGE_ID]);
+        }
         var cunliTitle = p.C_Name + p.T_Name + p.V_Name;
         $('#boardTitle').html(cunliTitle);
         $('#sidebar-title').html(cunliTitle);
@@ -205,3 +211,67 @@ map.on('singleclick', function(evt) {
       }
   });
 });
+
+window.chartColors = {
+	red: 'rgb(255, 99, 132)',
+	orange: 'rgb(255, 159, 64)',
+	yellow: 'rgb(255, 205, 86)',
+	green: 'rgb(75, 192, 192)',
+	blue: 'rgb(54, 162, 235)',
+	purple: 'rgb(153, 102, 255)',
+	grey: 'rgb(201, 203, 207)'
+};
+
+var showCunliCharts = function(d) {
+  var chartConfig = {
+    type: 'horizontalBar',
+    data: {
+      labels: [],
+      datasets: []
+    },
+    options: {
+      tooltips: {
+        mode: 'index',
+      },
+      scales: {
+        xAxes: [{
+          stacked: true,
+          scaleLabel: {
+            display: true,
+            labelString: '人數'
+          }
+        }],
+        yAxes: [{
+          stacked: true
+        }]
+      }
+    }
+  };
+
+  var dataset1 = {
+    label: '未滿15歲',
+    backgroundColor: window.chartColors.red,
+    data: []
+  };
+  var dataset2 = {
+    label: '15-64歲',
+    backgroundColor: window.chartColors.green,
+    data: []
+  };
+  var dataset3 = {
+    label: '年滿65歲',
+    backgroundColor: window.chartColors.purple,
+    data: []
+  };
+  for(k in d.population) {
+    chartConfig.data.labels.push(k);
+    dataset1.data.push(d.population[k].under15);
+    dataset2.data.push(d.population[k].be1564);
+    dataset3.data.push(d.population[k].up65);
+  }
+  chartConfig.data.datasets.push(dataset1);
+  chartConfig.data.datasets.push(dataset2);
+  chartConfig.data.datasets.push(dataset3);
+  var ctx = document.getElementById('chartPopulation').getContext('2d');
+  window.myLine = new Chart(ctx, chartConfig);
+}

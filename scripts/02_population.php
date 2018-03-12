@@ -27,7 +27,7 @@ if(!file_exists($path)) {
 }
 
 foreach($result AS $code => $data) {
-  ksort($data);
+  krsort($data);
   file_put_contents($path . '/' . $code . '.json', json_encode(array(
     'code' => $code,
     'population' => $data,
