@@ -12,6 +12,23 @@ for (var z = 0; z < 20; ++z) {
     resolutions[z] = size / Math.pow(2, z);
     matrixIds[z] = z;
 }
+var baseLayer = new ol.layer.Tile({
+    source: new ol.source.WMTS({
+        matrixSet: 'EPSG:3857',
+        format: 'image/png',
+        url: 'http://wmts.nlsc.gov.tw/wmts',
+        layer: 'EMAP',
+        tileGrid: new ol.tilegrid.WMTS({
+            origin: ol.extent.getTopLeft(projectionExtent),
+            resolutions: resolutions,
+            matrixIds: matrixIds
+        }),
+        style: 'default',
+        wrapX: true,
+        attributions: '<a href="http://maps.nlsc.gov.tw/" target="_blank">國土測繪圖資服務雲</a>'
+    }),
+    opacity: 0.5
+});
 var container = document.getElementById('popup');
 var content = document.getElementById('popup-content');
 var closer = document.getElementById('popup-closer');
@@ -22,7 +39,6 @@ var popup = new ol.Overlay({
     duration: 250
   }
 });
-var info = {};
 var layerPool = {};
 var layerYellow = new ol.style.Style({
   stroke: new ol.style.Stroke({
@@ -62,7 +78,7 @@ var layerRed = new ol.style.Style({
       width: 1
   }),
   fill: new ol.style.Fill({
-      color: 'rgba(255,0,0,0.7)'
+      color: 'rgba(255,0,0,0.3)'
   }),
   text: new ol.style.Text({
     font: 'bold 16px "Open Sans", "Arial Unicode MS", "sans-serif"',
@@ -102,8 +118,9 @@ var cityLayer = new ol.layer.Vector({
     },
 });
 
+// OSM - new ol.layer.Tile({source: new ol.source.OSM()})
 var map = new ol.Map({
-  layers: [new ol.layer.Tile({source: new ol.source.OSM()}), cityLayer],
+  layers: [baseLayer, cityLayer],
   overlays: [popup],
   target: 'map',
   view: appView
