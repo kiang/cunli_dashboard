@@ -31,10 +31,10 @@ $households = $populations = $under15 = $be1564 = $up65 = array();
 
 foreach(glob($path . '/data/*.json') AS $jsonFile) {
   $json = json_decode(file_get_contents($jsonFile), true);
-  if(isset($json['population']['2017-12']) && isset($json['population']['2015-01'])) {
+  if(isset($json['population']['2017-12']) && isset($json['population']['2014-12'])) {
     $listLine = array($ref[$json['code']], 'https://kiang.github.io/cunli_dashboard/#/cunli/' . $json['code']);
     foreach($result AS $k => $v) {
-      $target = $json['population']['2017-12'][$k] - $json['population']['2015-01'][$k];
+      $target = $json['population']['2017-12'][$k] - $json['population']['2014-12'][$k];
       if(!isset($result[$k][$target])) {
         $result[$k][$target] = array();
       }
