@@ -56,6 +56,22 @@ var layerBlue = new ol.style.Style({
     })
   })
 });
+var layerRed = new ol.style.Style({
+  stroke: new ol.style.Stroke({
+      color: 'rgba(0,0,0,1)',
+      width: 1
+  }),
+  fill: new ol.style.Fill({
+      color: 'rgba(255,0,0,0.7)'
+  }),
+  text: new ol.style.Text({
+    font: 'bold 16px "Open Sans", "Arial Unicode MS", "sans-serif"',
+    placement: 'point',
+    fill: new ol.style.Fill({
+      color: 'rgba(0,50,0,1)'
+    })
+  })
+});
 var layerBlank = new ol.style.Style({
   stroke: new ol.style.Stroke({
       color: 'rgba(0,0,0,1)',
@@ -142,6 +158,7 @@ var smallMapView = new ol.View({
 });
 var smallMapLayer = false;
 var dataPool = {};
+var lastCunli = false;
 map.on('singleclick', function(evt) {
   clickedCoordinate = evt.coordinate;
   map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
@@ -176,6 +193,15 @@ map.on('singleclick', function(evt) {
         sidebar.close();
         currentTownId = p.TOWN_ID;
       } else if(p.VILLAGE_ID) {
+        if(false !== lastCunli) {
+          var fStyle = layerBlue.clone();
+          fStyle.getText().setText(lastCunli.get('V_Name'));
+          lastCunli.setStyle(fStyle);
+        }
+        lastCunli = feature;
+        var rStyle = layerRed.clone();
+        rStyle.getText().setText(lastCunli.get('V_Name'));
+        lastCunli.setStyle(rStyle);
         if(!dataPool[p.VILLAGE_ID]) {
           $.getJSON('data/' + p.VILLAGE_ID + '.json', function(d) {
             dataPool[p.VILLAGE_ID] = d;
