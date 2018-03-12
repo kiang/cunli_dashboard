@@ -282,6 +282,7 @@ var showCunliCharts = function(d) {
 
 var cityCallback = false;
 var viewCity = function (cityId) {
+  geolocationCentered = true;
   if(false === cityLayerLoaded) {
     cityCallback = cityId;
   } else {
