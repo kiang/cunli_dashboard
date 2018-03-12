@@ -106,6 +106,7 @@ var appView = new ol.View({
   zoom: 10
 });
 
+var cityLayerLoaded = false;
 var cityLayer = new ol.layer.Vector({
     source: new ol.source.Vector({
         url: 'city.topo.json',
@@ -116,6 +117,18 @@ var cityLayer = new ol.layer.Vector({
       fStyle.getText().setText(f.get('T_Name'));
       return fStyle;
     },
+});
+
+cityLayer.once('render', function() {
+  this.getSource().forEachFeature(function(f) {
+    f.setId(f.get('TOWN_ID'));
+  });
+  this.set('layerType', 'cityLayer');
+  cityLayerLoaded = true;
+  if(false !== cityCallback) {
+    viewCity(cityCallback);
+    cityCallback = false;
+  }
 });
 
 // OSM - new ol.layer.Tile({source: new ol.source.OSM()})
@@ -171,7 +184,7 @@ new ol.layer.Vector({
 
 var lastCity = false;
 var cunliLayer = false;
-var currentTownId = '';
+var currentCityId = '';
 var smallMap = false;
 var smallMapView = new ol.View({
   center: ol.proj.fromLonLat([120.301507, 23.124694]),
@@ -185,78 +198,10 @@ map.on('singleclick', function(evt) {
   clickedCoordinate = evt.coordinate;
   map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
       var p = feature.getProperties();
-      if(currentTownId !== p.TOWN_ID) {
-        if(false !== lastCity) {
-          var fStyle = layerYellow.clone();
-          fStyle.getText().setText(lastCity.get('T_Name'));
-          lastCity.setStyle(fStyle);
-        }
-        if(false !== cunliLayer) {
-          map.removeLayer(cunliLayer);
-        }
-        if(!layerPool[p.TOWN_ID]) {
-          layerPool[p.TOWN_ID] = new ol.layer.Vector({
-              source: new ol.source.Vector({
-                  url: 'cunli/' + p.TOWN_ID + '.json',
-                  format: new ol.format.GeoJSON()
-              }),
-              style: function(f) {
-                var fStyle = layerBlue.clone();
-                fStyle.getText().setText(f.get('V_Name'));
-                return fStyle;
-              }
-          });
-        }
-        cunliLayer = layerPool[p.TOWN_ID];
-        map.addLayer(cunliLayer);
-        map.getView().fit(feature.getGeometry());
-        feature.setStyle(layerBlank);
-        lastCity = feature;
-        sidebar.close();
-        currentTownId = p.TOWN_ID;
+      if(currentCityId !== p.TOWN_ID) {
+        router.setRoute('/city/' + p.TOWN_ID);
       } else if(p.VILLAGE_ID) {
-        currentCunliId = p.VILLAGE_ID;
-        if(false !== lastCunli) {
-          var fStyle = layerBlue.clone();
-          fStyle.getText().setText(lastCunli.get('V_Name'));
-          lastCunli.setStyle(fStyle);
-        }
-        lastCunli = feature;
-        var rStyle = layerRed.clone();
-        rStyle.getText().setText(lastCunli.get('V_Name'));
-        lastCunli.setStyle(rStyle);
-        if(!dataPool[p.VILLAGE_ID]) {
-          $.getJSON('data/' + p.VILLAGE_ID + '.json', function(d) {
-            dataPool[p.VILLAGE_ID] = d;
-            showCunliCharts(dataPool[p.VILLAGE_ID]);
-          })
-        } else {
-          showCunliCharts(dataPool[p.VILLAGE_ID]);
-        }
-        var cunliTitle = p.C_Name + p.T_Name + p.V_Name;
-        $('#boardTitle').html(cunliTitle);
-        $('#sidebar-title').html(cunliTitle);
-        if(!smallMap) {
-          smallMap = new ol.Map({
-            controls: [],
-            interactions: [],
-            target: 'smallMap',
-            view: smallMapView
-          });
-        }
-        if(false !== smallMapLayer) {
-          smallMap.removeLayer(smallMapLayer);
-        }
-        smallMapLayer = new ol.layer.Vector({
-          source: new ol.source.Vector(),
-          style: layerBlue
-        });
-        smallMapLayer.getSource().addFeature(feature);
-        sidebar.open('home');
-        map.getView().fit(feature.getGeometry());
-        smallMap.addLayer(smallMapLayer);
-        smallMap.getView().fit(feature.getGeometry());
-        smallMap.updateSize();
+        router.setRoute('/cunli/' + p.VILLAGE_ID);
       }
   });
 });
@@ -334,3 +279,128 @@ var showCunliCharts = function(d) {
   var ctx = document.getElementById('chartPopulation').getContext('2d');
   window.myLine = new Chart(ctx, chartConfig);
 }
+
+var cityCallback = false;
+var viewCity = function (cityId) {
+  if(false === cityLayerLoaded) {
+    cityCallback = cityId;
+  } else {
+    if(false !== lastCity) {
+      var fStyle = layerYellow.clone();
+      fStyle.getText().setText(lastCity.get('T_Name'));
+      lastCity.setStyle(fStyle);
+    }
+    if(false !== cunliLayer) {
+      map.removeLayer(cunliLayer);
+    }
+    if(!layerPool[cityId]) {
+      layerPool[cityId] = new ol.layer.Vector({
+          source: new ol.source.Vector({
+              url: 'cunli/' + cityId + '.json',
+              format: new ol.format.GeoJSON()
+          }),
+          style: function(f) {
+            var fStyle = layerBlue.clone();
+            fStyle.getText().setText(f.get('V_Name'));
+            return fStyle;
+          }
+      });
+      layerPool[cityId].set('cityId', cityId);
+      layerPool[cityId].on('render', function() {
+        this.getSource().forEachFeature(function(f) {
+          f.setId(f.get('VILLAGE_ID'));
+        });
+        this.set('layerType', 'cunliLayer');
+        if(false !== cunliCallback) {
+          viewCunli(cunliCallback);
+          cunliCallback = false;
+        }
+      });
+    }
+    cunliLayer = layerPool[cityId];
+    map.addLayer(cunliLayer);
+    map.getLayers().forEach(function(l) {
+      if(l.get('layerType') === 'cityLayer') {
+        l.getSource().forEachFeature(function(f) {
+          if(f.getId() === cityId) {
+            map.getView().fit(f.getGeometry());
+            f.setStyle(layerBlank);
+            lastCity = f;
+          }
+        })
+      }
+    });
+    sidebar.close();
+    currentCityId = cityId;
+  }
+};
+
+var cunliCallback = false;
+var viewCunli = function (cunliId) {
+  var parts = cunliId.split('-');
+  if(currentCityId !== parts[0]) {
+    viewCity(parts[0]);
+    cunliCallback = cunliId;
+  } else {
+    currentCunliId = cunliId;
+    if(false !== lastCunli) {
+      var fStyle = layerBlue.clone();
+      fStyle.getText().setText(lastCunli.get('V_Name'));
+      lastCunli.setStyle(fStyle);
+    }
+    map.getLayers().forEach(function(l) {
+      if(l.get('layerType') === 'cunliLayer') {
+        l.getSource().forEachFeature(function(feature) {
+          if(feature.getId() === cunliId) {
+            var p = feature.getProperties();
+            lastCunli = feature;
+            var rStyle = layerRed.clone();
+            rStyle.getText().setText(lastCunli.get('V_Name'));
+            lastCunli.setStyle(rStyle);
+            if(!dataPool[cunliId]) {
+              $.getJSON('data/' + cunliId + '.json', function(d) {
+                dataPool[cunliId] = d;
+                showCunliCharts(dataPool[cunliId]);
+              })
+            } else {
+              showCunliCharts(dataPool[cunliId]);
+            }
+            var cunliTitle = p.C_Name + p.T_Name + p.V_Name;
+            $('#boardTitle').html(cunliTitle);
+            $('#sidebar-title').html(cunliTitle);
+            if(!smallMap) {
+              smallMap = new ol.Map({
+                controls: [],
+                interactions: [],
+                target: 'smallMap',
+                view: smallMapView
+              });
+            }
+            if(false !== smallMapLayer) {
+              smallMap.removeLayer(smallMapLayer);
+            }
+            smallMapLayer = new ol.layer.Vector({
+              source: new ol.source.Vector(),
+              style: layerBlue
+            });
+            smallMapLayer.getSource().addFeature(feature);
+            sidebar.open('home');
+            map.getView().fit(feature.getGeometry());
+            smallMap.addLayer(smallMapLayer);
+            smallMap.getView().fit(feature.getGeometry());
+            smallMap.updateSize();
+          }
+        })
+      }
+    });
+  }
+};
+
+var routes = {
+  '/cunli/:cunliId': viewCunli,
+  '/city/:cityId': viewCity
+};
+
+var router = Router(routes);
+
+router.init();
