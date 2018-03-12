@@ -152,18 +152,22 @@ positionFeature.setStyle(new ol.style.Style({
   })
 }));
 
+var geolocationCentered = false;
 geolocation.on('change:position', function() {
   var coordinates = geolocation.getPosition();
-  positionFeature.setGeometry(coordinates ?
-          new ol.geom.Point(coordinates) : null);
-      });
+  if(false === geolocationCentered) {
+    map.getView().setCenter(coordinates);
+    geolocationCentered = true;
+  }
+  positionFeature.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
+});
 
-      new ol.layer.Vector({
-        map: map,
-        source: new ol.source.Vector({
-          features: [positionFeature]
-        })
-      });
+new ol.layer.Vector({
+  map: map,
+  source: new ol.source.Vector({
+    features: [positionFeature]
+  })
+});
 
 var lastCity = false;
 var cunliLayer = false;
