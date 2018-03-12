@@ -180,6 +180,7 @@ var smallMapView = new ol.View({
 var smallMapLayer = false;
 var dataPool = {};
 var lastCunli = false;
+var currentCunliId = '';
 map.on('singleclick', function(evt) {
   clickedCoordinate = evt.coordinate;
   map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
@@ -214,6 +215,7 @@ map.on('singleclick', function(evt) {
         sidebar.close();
         currentTownId = p.TOWN_ID;
       } else if(p.VILLAGE_ID) {
+        currentCunliId = p.VILLAGE_ID;
         if(false !== lastCunli) {
           var fStyle = layerBlue.clone();
           fStyle.getText().setText(lastCunli.get('V_Name'));
@@ -281,12 +283,12 @@ var showCunliCharts = function(d) {
         enabled: true,
         mode: 'index',
         callbacks: {
+          label: function(i, d) {
+            var p = Math.round((parseInt(i.xLabel) / parseInt(dataPool[currentCunliId].population[i.yLabel].population)) * 100);
+            return i.xLabel + ' (' + p + '%)';
+          },
           afterBody: function(i, d) {
-            var xSum = 0;
-            for(k in i) {
-              xSum += parseInt(i[k].xLabel);
-            }
-            return "小計：" + xSum;
+            return "小計：" + dataPool[currentCunliId].population[i[0].yLabel].population;
           }
         }
       },
