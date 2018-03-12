@@ -274,7 +274,17 @@ var showCunliCharts = function(d) {
     },
     options: {
       tooltips: {
+        enabled: true,
         mode: 'index',
+        callbacks: {
+          afterBody: function(i, d) {
+            var xSum = 0;
+            for(k in i) {
+              xSum += parseInt(i[k].xLabel);
+            }
+            return "小計：" + xSum;
+          }
+        }
       },
       scales: {
         xAxes: [{
