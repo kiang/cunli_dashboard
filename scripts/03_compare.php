@@ -34,7 +34,14 @@ foreach(glob($path . '/data/*.json') AS $jsonFile) {
   if(isset($json['population']['2017-12']) && isset($json['population']['2014-12'])) {
     $listLine = array($ref[$json['code']], 'https://kiang.github.io/cunli_dashboard/#/cunli/' . $json['code']);
     foreach($result AS $k => $v) {
-      $target = $json['population']['2017-12'][$k] - $json['population']['2014-12'][$k];
+      $t = $json['population']['2017-12'][$k] - $json['population']['2014-12'][$k];
+      if($t < 0) {
+        $target = 0 - round(abs($t) / $json['population']['2014-12'][$k], 4);
+      } else {
+        $target = round($t / $json['population']['2014-12'][$k], 4);
+      }
+      $target = $target * 10000;
+
       if(!isset($result[$k][$target])) {
         $result[$k][$target] = array();
       }
@@ -48,7 +55,7 @@ foreach($result AS $k => $v) {
   ksort($v);
   foreach($v AS $value => $lines) {
     foreach($lines AS $line) {
-      fputcsv($fh, array_merge(array($value), $line));
+      fputcsv($fh, array_merge(array($value / 10000), $line));
     }
   }
 }
