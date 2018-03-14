@@ -279,7 +279,75 @@ var showCunliCharts = function(d) {
   $('#results-graph').remove();
   $('#chartPopulation').html('<canvas id="results-graph" height="600px"><canvas>');
   var ctx = document.getElementById('results-graph').getContext('2d');
-  window.myLine = new Chart(ctx, chartConfig);
+  new Chart(ctx, chartConfig);
+
+  var incomeConfig = {
+    type: 'horizontalBar',
+    data: {
+      labels: [],
+      datasets: []
+    },
+    options: {
+      tooltips: {
+        enabled: true,
+        mode: 'index'
+      },
+      scales: {
+        xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: '收入(單位：千元)'
+          }
+        }]
+      }
+    }
+  };
+  var dataset21 = {
+    label: '中位數',
+    backgroundColor: window.chartColors.red,
+    data: []
+  };
+  var dataset22 = {
+    label: '平均數',
+    backgroundColor: window.chartColors.green,
+    data: []
+  };
+  var dataset23 = {
+    label: '標準差',
+    backgroundColor: window.chartColors.purple,
+    data: []
+  };
+  var dataset24 = {
+    label: '第一分位',
+    backgroundColor: window.chartColors.orange,
+    data: []
+  };
+  var dataset25 = {
+    label: '第三分位',
+    backgroundColor: window.chartColors.blue,
+    data: []
+  };
+  var keys = Object.keys(d.income);
+  keys.sort(function(a, b){return b-a});
+
+  for(i in keys) {
+    k = keys[i];
+    incomeConfig.data.labels.push(k);
+    dataset21.data.push(d.income[k].mid);
+    dataset22.data.push(d.income[k].avg);
+    dataset23.data.push(d.income[k].sd);
+    dataset24.data.push(d.income[k].mid1);
+    dataset25.data.push(d.income[k].mid3);
+  }
+  incomeConfig.data.datasets.push(dataset21);
+  incomeConfig.data.datasets.push(dataset22);
+  incomeConfig.data.datasets.push(dataset23);
+  incomeConfig.data.datasets.push(dataset24);
+  incomeConfig.data.datasets.push(dataset25);
+  $('#results-graph2').remove();
+  $('#chartIncome').html('<canvas id="results-graph2" height="600px"><canvas>');
+  var ctx2 = document.getElementById('results-graph2').getContext('2d');
+  new Chart(ctx2, incomeConfig);
 }
 
 var cityCallback = false;
