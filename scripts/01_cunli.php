@@ -13,15 +13,18 @@ while($line = fgetcsv($fh, 2048)) {
   );
 }
 
-$json = json_decode(file_get_contents('/home/kiang/public_html/taiwan_basecode/cunli/geo/20150401.json'), true);
+$json = json_decode(file_get_contents('/home/kiang/public_html/taiwan_basecode/cunli/geo/20180205.json'), true);
 $pool = array();
 foreach($json['features'] AS $f) {
-  $parts = explode('-', $f['properties']['VILLAGE_ID']);
-  $key = $f['properties']['C_Name'] . $f['properties']['T_Name'] . $parts[1];
+  $key = $f['properties']['COUNTYNAME'] . $f['properties']['TOWNNAME'] . substr($f['properties']['VILLCODE'], -3);
   if(isset($ref[$key])) {
     $f['properties']['TOWN_ID'] = $ref[$key]['town'];
     $f['properties']['VILLAGE_ID'] = $ref[$key]['code'];
     $f['properties']['V_Name'] = $ref[$key]['name'];
+  } else {
+    $f['properties']['TOWN_ID'] = $f['properties']['TOWNCODE'];
+    $f['properties']['VILLAGE_ID'] = $f['properties']['VILLCODE'];
+    $f['properties']['V_Name'] = $f['properties']['VILLNAME'];
   }
   if(!isset($pool[$f['properties']['TOWN_ID']])) {
     $pool[$f['properties']['TOWN_ID']] = array(
@@ -50,12 +53,10 @@ foreach($pool AS $townId => $fc) {
     } else {
       $city = $j;
       $cityProperties = array(
-        'COUNTY_ID' => $f['properties']['COUNTY_ID'],
+        'COUNTY_ID' => $f['properties']['COUNTYCODE'],
         'TOWN_ID' => $f['properties']['TOWN_ID'],
-        'C_Name' => $f['properties']['C_Name'],
-        'T_Name' => $f['properties']['T_Name'],
-        'Shape_Leng' => $f['properties']['Shape_Leng'],
-        'Shape_Area' => $f['properties']['Shape_Area'],
+        'C_Name' => $f['properties']['COUNTYNAME'],
+        'T_Name' => $f['properties']['TOWNNAME'],
       );
     }
   }

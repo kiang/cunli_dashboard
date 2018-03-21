@@ -436,7 +436,7 @@ var viewCunli = function (cunliId) {
             } else {
               showCunliCharts(dataPool[cunliId]);
             }
-            var cunliTitle = p.C_Name + p.T_Name + p.V_Name;
+            var cunliTitle = p.COUNTYNAME + p.TOWNNAME + p.V_Name;
             $('#boardTitle').html(cunliTitle);
             $('#sidebar-title').html(cunliTitle);
             if(!smallMap) {
